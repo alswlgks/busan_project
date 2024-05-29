@@ -63,7 +63,7 @@ int main(void) {
         if (ci == 1) { printf("탈출 성공~!"); break; }
         if (ci == zom - 1) { printf("탈출 실패ㅠ~ㅠ"); break; }
         turn++;
-        sleep(4);
+        //sleep(4);
     }
     return 0;
 }
