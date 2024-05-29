@@ -94,7 +94,7 @@ void move_zombie() {
     if (turn % 2 == 1 && !madongseok_action_success) { // 홀수 턴이고 마동석이 붙들기 성공하지 않은 경우
         if (aggro >= madongseok_aggro && zom > 1) {
             zom--; // 시민의 어그로가 높거나 같은 경우 시민 쪽으로 이동
-        } else if (ma < zom && zom > 1) {
+        } else if (aggro < madongseok_aggro && ma < zom && zom > 1) {
             zom--; // 마동석 쪽으로 이동
         }
     }
@@ -140,8 +140,10 @@ void move_madongseok() {
         scanf("%d", &move);
     } while (move != MOVE_STAY && move != MOVE_LEFT);
 
-    if (move == MOVE_LEFT && ma > 1) {
+    if (move == MOVE_LEFT && ma > 1 && ma != zom + 1) {
         ma--; // 왼쪽으로 이동
+    } else if (move == MOVE_LEFT && ma == zom + 1) {
+         printf("madongseok move(0:stay, 1:left)>> ");
     }
 }
 
