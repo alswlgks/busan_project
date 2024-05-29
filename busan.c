@@ -87,11 +87,9 @@ void m_citizen() {
 
 // 좀비 이동 규칙
 void move_zombie() {
-    int r_move_z = rand() % 100;
-    if (r_move_z <= percentile_probability){
-    if (turn % 2 != 0 && !madongseok_action_success) { // 홀수 턴이고 마동석이 붙들기 성공하지 않은 경우
+    if (turn % 2 != 1 && !madongseok_action_success) { // 홀수 턴이고 마동석이 붙들기 성공하지 않은 경우
       
-        if (aggro >= madongseok_aggro && zom > 1){
+        if (aggro <=  madongseok_aggro && zom > 1){
             zom--; // 시민의 어그로가 높으면 시민 쪽으로 이동
         }
         else if (ma < zom && zom > 1)
@@ -102,7 +100,7 @@ void move_zombie() {
         
     }
 }
-}
+
 // 좀비 공격 규칙
 void zombie_attack() {
     if (zom == ci + 1 && zom == ma - 1) { // 좀비가 시민과 마동석 둘 다 인접한 경우
@@ -182,21 +180,25 @@ int main(void) {
         int before_ci = ci, before_zom = zom, before_ma = ma;
         
         
+        
         m_citizen(); // 시민 이동
-        citizen_status(before_ci); // 시민 상태 출력
+       
         before_ci = ci; // 이동 후 상태 저장
         
         move_zombie(); // 좀비 이동
-        zom_status(before_zom); // 좀비 상태 출력
+       
         before_zom = zom; // 이동 후 상태 저장
 
         print_train(); // 이동 후 기차 상태 출력
+        citizen_status(before_ci); // 시민 상태 출력
+        zom_status(before_zom); // 좀비 상태 출력
 
         move_madongseok(); // 마동석 이동
-        ma_status(before_ma); // 마동석 상태 출력
+        
         before_ma = ma; // 이동 후 상태 저장
         
-  
+        print_train(); // 이동 후 기차 상태 출력
+        ma_status(before_ma); // 마동석 상태 출력
         
         citizen_status(before_ci); // 시민 상태 출력
         zom_status(before_zom); // 좀비 상태 출력
