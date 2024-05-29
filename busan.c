@@ -23,7 +23,7 @@ int train_length, madongseok_stamina, percentile_probability, turn = 1;
 int ma, zom, ci;
 int aggro = 1; // 시민의 어그로 값
 int madongseok_aggro = 1; // 마동석의 어그로 값
-int madongseok_action_success = 1; // 마동석의 '붙들기' 성공 여부
+int madongseok_action_success = 0; // 마동석의 '붙들기' 성공 여부 (기본값 : false)
 
 // 게임 초기화 함수
 void initialize_game() {
@@ -87,17 +87,22 @@ void m_citizen() {
 
 // 좀비 이동 규칙
 void move_zombie() {
-    if (turn % 2 != 0 && madongseok_action_success) { // 홀수 턴이고 마동석이 붙들기 성공하지 않은 경우
-        if (ci == zom - 1 || ma == zom + 1) {// 좀비가 시민 또는 마동석과 인접해 있는 경우 이동하지 않음
-            return;
-        }
-        else if (aggro >= madongseok_aggro && zom > 1)
+    int r_move_z = rand() % 100;
+    if (r_move_z <= percentile_probability){
+    if (turn % 2 != 0 && !madongseok_action_success) { // 홀수 턴이고 마동석이 붙들기 성공하지 않은 경우
+      
+        if (aggro >= madongseok_aggro && zom > 1){
             zom--; // 시민의 어그로가 높으면 시민 쪽으로 이동
+        }
         else if (ma < zom && zom > 1)
             zom--; // 마동석 쪽으로 이동
+             if (ci == zom - 1 || ma == zom + 1) {// 좀비가 시민 또는 마동석과 인접해 있는 경우 이동하지 않음 
+            return;
+        }
+        
     }
 }
-
+}
 // 좀비 공격 규칙
 void zombie_attack() {
     if (zom == ci + 1 && zom == ma - 1) { // 좀비가 시민과 마동석 둘 다 인접한 경우
@@ -125,7 +130,7 @@ void zombie_attack() {
 void move_madongseok() {
     int move;
     do {
-        printf("Madongseok move (0: Stay, 1: Move Left): ");
+        printf("madongseok move(0:stay, 1:left)>> ");
         scanf("%d", &move);
     } while (move != MOVE_STAY && move != MOVE_LEFT);
 
@@ -139,7 +144,7 @@ void action_madongseok() {
     int action;
     if (ma != zom + 1) { // 좀비와 인접하지 않은 경우에만 선택 가능
         do {
-            printf("Madongseok action (1: Rest, 2: Provoke): ");
+            printf("madongseok action(0:rest, 1:provoke)>> ");
             scanf("%d", &action);
         } while (action != ACTION_REST && action != ACTION_PROVO);
 
@@ -152,16 +157,22 @@ void action_madongseok() {
     }
 }
 
-// 현재 상태를 출력하는 함수
-void print_status(int before_ci, int before_zom, int before_ma) {
+// 현재 시민의 상태를 출력하는 함수
+void citizen_status(int before_ci ) {
     printf("citizen: %s %d -> %d (aggro: %d)\n", before_ci == ci ? "stay" : "move", before_ci, ci, aggro);
+}
+// 현재 좀비의 상태를 출력하는 함수
+void zom_status(int before_zom){
     if (turn % 2 != 0)
         printf("zombie: %s %d\n", before_zom == zom ? "stay" : "move", zom);
     else
         printf("zombie: stay %d (cannot move)\n", zom);
-    printf("madongseok: %s %d (aggro: %d, stamina: %d)\n\n", before_ma == ma ? "stay" : "move", ma, madongseok_aggro, madongseok_stamina);
 }
-
+//현재 마동석의 상태를 출력하는 함수
+void ma_status(int before_ma){
+    printf("madongseok: %s %d (aggro: %d, stamina: %d)\n\n",
+     before_ma == ma ? "stay" : "move", ma, madongseok_aggro, madongseok_stamina);
+}
 // 메인 함수
 int main(void) {
     initialize_game(); // 게임 초기화
@@ -169,23 +180,31 @@ int main(void) {
 
     while (1) {
         int before_ci = ci, before_zom = zom, before_ma = ma;
-        //print_status(before_ci, before_zom, before_ma); // 초기 상태 출력
+        
         
         m_citizen(); // 시민 이동
+        citizen_status(before_ci); // 시민 상태 출력
         before_ci = ci; // 이동 후 상태 저장
+        
         move_zombie(); // 좀비 이동
+        zom_status(before_zom); // 좀비 상태 출력
         before_zom = zom; // 이동 후 상태 저장
 
-
         print_train(); // 이동 후 기차 상태 출력
-        print_status(before_ci, before_zom, before_ma); // 상태 출력
 
         move_madongseok(); // 마동석 이동
+        ma_status(before_ma); // 마동석 상태 출력
         before_ma = ma; // 이동 후 상태 저장
+        
+  
+        
+        citizen_status(before_ci); // 시민 상태 출력
+        zom_status(before_zom); // 좀비 상태 출력
         
         zombie_attack(); // 좀비 공격
         
         action_madongseok(); // 마동석 행동
+        ma_status(before_ma); // 마동석 상태 출력
 
         if (ci == 1) { printf("탈출 성공~!\n"); break; } // 시민이 탈출했을 경우
         if (ci == zom - 1) { printf("탈출 실패ㅠ~ㅠ\n"); break; } // 좀비에게 잡혔을 경우
@@ -193,4 +212,3 @@ int main(void) {
     }
     return 0;
 }
-
