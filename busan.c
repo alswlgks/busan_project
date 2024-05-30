@@ -35,19 +35,19 @@ void initialize_game() {
     // 기차 길이 입력받기
     do {
         printf("train length(%d~%d)>> ", LEN_MIN, LEN_MAX);
-        scanf("%d", &train_length);
+        scanf_s("%d", &train_length);
     } while (train_length < LEN_MIN || train_length > LEN_MAX);
 
     // 마동석 체력 입력받기
     do {
         printf("madongseok stamina(%d~%d)>> ", STM_MIN, STM_MAX);
-        scanf("%d", &madongseok_stamina);
+        scanf_s("%d", &madongseok_stamina);
     } while (madongseok_stamina < STM_MIN || madongseok_stamina > STM_MAX);
     
     // 확률 입력받기
     do {
         printf("percentile probability 'p'(%d~%d)>> ", PROB_MIN, PROB_MAX);
-        scanf("%d", &percentile_probability);
+        scanf_s("%d", &percentile_probability);
     } while (percentile_probability < PROB_MIN || percentile_probability > PROB_MAX);
 
     // 초기 위치 설정
@@ -137,7 +137,7 @@ void move_madongseok() {
     int move;
     do {
         printf("madongseok move(0:stay, 1:left)>> ");
-        scanf("%d", &move);
+        scanf_s("%d", &move);
     } while (move != MOVE_STAY && move != MOVE_LEFT);
 
     if (move == MOVE_LEFT && ma > 1 && ma != zom + 1) {
@@ -153,7 +153,7 @@ void action_madongseok() {
     if (ma != zom + 1) { // 좀비와 인접하지 않은 경우에만 선택 가능
         do {
             printf("madongseok action(0:rest, 1:provoke)>> ");
-            scanf("%d", &action);
+            scanf_s("%d", &action);
         } while (action != ACTION_REST && action != ACTION_PROVO);
 
         if (action == ACTION_REST) { // 휴식
