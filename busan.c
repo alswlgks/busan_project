@@ -8,7 +8,7 @@
 #define STM_MAX 5  // 마동석 체력 최대값
 #define PROB_MIN 10 // 확률 최소값
 #define PROB_MAX 90 // 확률 최대값
-#define AGGRO_MIN 1 // 어그로 범위 최소값
+#define AGGRO_MIN 0 // 어그로 범위 최소값
 #define AGGRO_MAX 5 // 어그로 범위 최대값
 
 // 마동석 이동 방향 정의
@@ -35,19 +35,19 @@ void initialize_game() {
     // 기차 길이 입력받기
     do {
         printf("train length(%d~%d)>> ", LEN_MIN, LEN_MAX);
-        scanf_s("%d", &train_length);
+        scanf("%d", &train_length);
     } while (train_length < LEN_MIN || train_length > LEN_MAX);
 
     // 마동석 체력 입력받기
     do {
         printf("madongseok stamina(%d~%d)>> ", STM_MIN, STM_MAX);
-        scanf_s("%d", &madongseok_stamina);
+        scanf("%d", &madongseok_stamina);
     } while (madongseok_stamina < STM_MIN || madongseok_stamina > STM_MAX);
     
     // 확률 입력받기
     do {
         printf("percentile probability 'p'(%d~%d)>> ", PROB_MIN, PROB_MAX);
-        scanf_s("%d", &percentile_probability);
+        scanf("%d", &percentile_probability);
     } while (percentile_probability < PROB_MIN || percentile_probability > PROB_MAX);
 
     // 초기 위치 설정
@@ -135,15 +135,29 @@ void zombie_attack() {
 // 마동석 이동 규칙
 void move_madongseok() {
     int move;
-    do {
+    if (ma == zom + 1) {
+        // 마동석이 좀비와 인접해 있으면 대기만 가능
+        printf("madongseok move(0:stay)>> ");
+        scanf("%d", &move);
+        while (move != MOVE_STAY) {
+            printf("마동석이 좀비와 인접해 있어 대기만 가능합니다. 다시 입력하세요.\n");
+            printf("madongseok move(0:stay)>> ");
+            scanf("%d", &move);
+        }
+    } else {
+        // 마동석이 좀비와 인접해 있지 않으면 이동 가능
         printf("madongseok move(0:stay, 1:left)>> ");
-        scanf_s("%d", &move);
-    } while (move != MOVE_STAY && move != MOVE_LEFT);
+        scanf("%d", &move);
+        while (move != MOVE_STAY && move != MOVE_LEFT) {
+            printf("잘못된 입력입니다. 다시 입력하세요.\n");
+            printf("madongseok move(0:stay, 1:left)>> ");
+            scanf("%d", &move);
+        }
 
-    if (move == MOVE_LEFT && ma > 1 && ma != zom + 1) {
-        ma--; // 왼쪽으로 이동
-    } else if (move == MOVE_LEFT && ma == zom + 1) {
-         printf("madongseok move(0:stay, 1:left)>> ");
+        if (move == MOVE_LEFT && ma > 1) {
+            ma--; // 왼쪽으로 이동
+            madongseok_aggro = madongseok_aggro < AGGRO_MAX ? madongseok_aggro + 1 : AGGRO_MAX; // 어그로 증가
+        }
     }
 }
 
@@ -151,10 +165,13 @@ void move_madongseok() {
 void action_madongseok() {
     int action;
     if (ma != zom + 1) { // 좀비와 인접하지 않은 경우에만 선택 가능
-        do {
+        printf("madongseok action(0:rest, 1:provoke)>> ");
+        scanf("%d", &action);
+        while (action != ACTION_REST && action != ACTION_PROVO) {
+            printf("잘못된 입력입니다. 다시 입력하세요.\n");
             printf("madongseok action(0:rest, 1:provoke)>> ");
-            scanf_s("%d", &action);
-        } while (action != ACTION_REST && action != ACTION_PROVO);
+            scanf("%d", &action);
+        }
 
         if (action == ACTION_REST) { // 휴식
             madongseok_aggro = madongseok_aggro > AGGRO_MIN ? madongseok_aggro - 1 : AGGRO_MIN; // 어그로 감소
